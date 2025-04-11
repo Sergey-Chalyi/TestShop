@@ -38,12 +38,43 @@ class Product(models.Model):
 
 
 class Review(models.Model):
-    product = models.ForeignKey(Product, on_delete=models.CASCADE, related_name='reviews')
-    name = models.CharField(max_length=100)
-    email = models.EmailField()
-    text = models.TextField()
-    rating = models.IntegerField(choices=[(i, i) for i in range(1, 6)])
-    created_at = models.DateTimeField(auto_now_add=True)
+    product = models.ForeignKey(Product, on_delete=models.CASCADE, related_name='reviews',  verbose_name="Продукт")
+    name = models.CharField(max_length=100, verbose_name="Ім'я")
+    email = models.EmailField(verbose_name="Електронна пошта")
+    text = models.TextField(verbose_name="Текст відгуку")
+    rating = models.IntegerField(choices=[(i, i) for i in range(1, 6)], verbose_name="Рейтинг")
+    created_at = models.DateTimeField(auto_now_add=True, verbose_name="Дата створення")
 
     def __str__(self):
-        return f'Отзыв от {self.name} на {self.product.name}'
+        return f'Відгук від {self.name} на {self.product.name}'
+    
+
+class Order(models.Model):
+    STATUS_CHOICES = [
+        ('new', 'Новий'),
+        ('processing', 'В обробці'),
+        ('shipped', 'Відправлений'),
+        ('delivered', 'Доставлений'),
+        ('cancelled', 'Скасований')
+    ]
+
+    product = models.ForeignKey(Product, on_delete=models.CASCADE, related_name='orders')
+    customer_name = models.CharField(max_length=100, verbose_name="Ім'я покупця")
+    phone = models.CharField(max_length=20, verbose_name="Телефон")
+    address = models.TextField(verbose_name="Адреса доставки")
+    quantity = models.PositiveIntegerField(verbose_name="Кількість")
+    comment = models.TextField(blank=True, null=True, verbose_name="Коментар")
+    status = models.CharField(
+        max_length=20, 
+        choices=STATUS_CHOICES,
+        default='new',
+        verbose_name="Статус"
+    )
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    def __str__(self):
+        return f"Замовлення {self.id} від {self.customer_name}"
+
+    class Meta:
+        ordering = ['-created_at']

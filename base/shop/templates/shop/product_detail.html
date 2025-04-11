@@ -11,6 +11,15 @@
     <p><strong>В наявності:</strong> {{ product.stock }} шт</p>
 </div>
 
+<div class="order-section">
+    <h2>Замовити товар</h2>
+    <form method="post" class="order-form">
+        {% csrf_token %}
+        {{ order_form.as_p }}
+        <button type="submit" name="order_submit">Оформити замовлення</button>
+    </form>
+</div>
+
 <div class="reviews-section">
     <h2>Відгуки</h2>
     
@@ -18,7 +27,7 @@
         <h3>Залишити відгук</h3>
         <form method="post">
             {% csrf_token %}
-            {{ form.as_p }}
+            {{ review_form.as_p }}
             <button type="submit">Відправити відгук</button>
         </form>
     </div>
