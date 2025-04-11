@@ -10,4 +10,30 @@
     <p><strong>Бренд:</strong> {{ product.brand }}</p>
     <p><strong>В наявності:</strong> {{ product.stock }} шт</p>
 </div>
+
+<div class="reviews-section">
+    <h2>Відгуки</h2>
+    
+    <div class="review-form">
+        <h3>Залишити відгук</h3>
+        <form method="post">
+            {% csrf_token %}
+            {{ form.as_p }}
+            <button type="submit">Відправити відгук</button>
+        </form>
+    </div>
+
+    <div class="reviews-list">
+        {% for review in reviews %}
+        <div class="review">
+            <p><strong>{{ review.name }}</strong> - Оцінка: {{ review.rating }}/5</p>
+            <p>{{ review.text }}</p>
+            <small>{{ review.created_at|date:"d.m.Y H:i" }}</small>
+        </div>
+        {% empty %}
+        <p>Поки що немає відгуків.</p>
+        {% endfor %}
+    </div>
+</div>
+
 {% endblock %}

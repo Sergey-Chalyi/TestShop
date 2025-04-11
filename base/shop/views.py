@@ -1,5 +1,7 @@
-from django.shortcuts import get_object_or_404, render
-from .models import Category, Product
+from django.shortcuts import get_object_or_404, render, redirect
+from .models import Category, Product, Review
+from .forms import ReviewForm
+
 
 def all_products(request):
     products = Product.objects.all()
@@ -15,4 +17,20 @@ def category_detail(request, category_slug):
 
 def product_detail(request, category_slug, product_slug):
     product = get_object_or_404(Product, slug=product_slug, category__slug=category_slug)
-    return render(request, 'shop/product_detail.html', {'product': product})
+    reviews = product.reviews.all().order_by('-created_at')
+    
+    if request.method == 'POST':
+        form = ReviewForm(request.POST)
+        if form.is_valid():
+            review = form.save(commit=False)
+            review.product = product
+            review.save()
+            return redirect('product_detail', category_slug=category_slug, product_slug=product_slug)
+    else:
+        form = ReviewForm()
+    
+    return render(request, 'shop/product_detail.html', {
+        'product': product,
+        'reviews': reviews,
+        'form': form
+    })
